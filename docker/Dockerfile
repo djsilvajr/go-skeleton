@@ -15,6 +15,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/api      ./cmd/api
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/worker   ./cmd/worker
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/scheduler ./cmd/scheduler
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/migrate ./cmd/migrate
 
 # ── Runtime stage ───────────────────────────────────────────────────────────────
 FROM alpine:3.19
@@ -26,6 +27,7 @@ WORKDIR /app
 COPY --from=builder /app/api       /app/api
 COPY --from=builder /app/worker    /app/worker
 COPY --from=builder /app/scheduler /app/scheduler
+COPY --from=builder /app/migrate   /app/migrate
 
 EXPOSE 8020
 

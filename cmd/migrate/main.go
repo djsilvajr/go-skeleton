@@ -10,4 +10,5 @@ func main() {
 	cfg := config.Load()
 	db := database.Connect(cfg)
 	migrations.Run(db)
+	migrations.Seed(db)
 }

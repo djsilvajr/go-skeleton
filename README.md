@@ -96,7 +96,11 @@ docker compose up -d
 ## 🗄️ Migrations e seed
 
 ```bash
-docker exec -it go-skeleton-app /app/migrate
+docker exec -it go-skeleton-app sh
+```
+
+```bash
+./migrate
 ```
 
 Para popular o banco com dados iniciais, edite `migrations/seed.go` e chame `migrations.Seed(db)` no entrypoint de migrate.
@@ -115,7 +119,6 @@ Usuários criados por padrão:
 | Serviço | URL |
 |---|---|
 | API | http://localhost:8020/api/v1 |
-| Swagger | http://localhost:8020/api/documentation/index.html |
 | Health | http://localhost:8020/health |
 | MySQL | localhost:3306 |
 | Redis | localhost:6379 |
