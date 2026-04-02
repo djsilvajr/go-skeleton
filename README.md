@@ -5,11 +5,10 @@
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)
 ![Auth](https://img.shields.io/badge/Auth-JWT-000000?logo=jsonwebtokens&logoColor=white)
 ![Cache](https://img.shields.io/badge/Cache-Redis-DC382D?logo=redis&logoColor=white)
-![API](https://img.shields.io/badge/API-Swagger-85EA2D?logo=swagger&logoColor=black)
 ![Tracing](https://img.shields.io/badge/Tracing-Jaeger%20%2F%20OpenTelemetry-00A1C9?logo=opentelemetry&logoColor=white)
 ![Tests](https://img.shields.io/badge/Tests-Go%20Test-376ABD?logo=go&logoColor=white)
 
-> Skeleton de API em Go — repository pattern, JWT, Redis, OpenTelemetry (Jaeger), queue worker, scheduler, eventos, rate limit e Swagger. Arquitetura espelhada no [Laravel-skeleton](https://github.com/djsilvajr/Laravel-skeleton), sem frontend.
+> Skeleton de API em Go — repository pattern, JWT, Redis, OpenTelemetry (Jaeger), queue worker, scheduler, eventos e rate limit. Arquitetura espelhada no [Laravel-skeleton](https://github.com/djsilvajr/Laravel-skeleton), sem frontend.
 
 ---
 
@@ -25,7 +24,6 @@ Base sólida para APIs RESTful em Go de médio porte, incluindo:
 - ✅ **Queue worker** — processo separado, handlers registráveis
 - ✅ **Scheduler** — tarefas recorrentes em processo dedicado
 - ✅ **Events** — pub/sub interno síncrono e assíncrono (fire-and-forget)
-- ✅ **Swagger/OpenAPI** — gerado via anotações no código
 - ✅ **Observabilidade** — OpenTelemetry → Jaeger (liga com uma env)
 - ✅ **Testes unitários e de integração** — mocks hand-rolled, sem dependências externas
 - ✅ **Ambiente dockerizado** — app + worker + scheduler + MySQL + Redis + Jaeger prontos
@@ -158,8 +156,6 @@ make worker
 # Rodar scheduler localmente
 make scheduler
 
-# Gerar docs Swagger (requer swag instalado)
-make swagger
 
 # Rodar todos os testes
 make test
@@ -186,7 +182,7 @@ internal/domain/produto/
     repository/ produto_repository.go   # interface + impl
     service/    produto_service.go  # lógica de negócio
                 errors.go           # erros sentinel
-    handler/    produto_handler.go  # HTTP handlers com anotações Swagger
+    handler/    produto_handler.go  # HTTP handlers
 ```
 
 Registre no router em `internal/router/router.go`:
@@ -266,7 +262,6 @@ Acesse os traces em http://localhost:16686.
 - [ ] `docker compose up -d`
 - [ ] `docker exec -it go-skeleton-app /app/migrate`
 - [ ] Testar `POST /api/v1/auth/login` com `admin@example.com` / `password`
-- [ ] Acessar Swagger em http://localhost:8020/api/documentation/index.html
 
 Pronto 🎉
 

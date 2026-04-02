@@ -15,11 +15,11 @@ type mockUserRepository struct {
 	findFn func(email string) (*model.User, error)
 }
 
-func (m *mockUserRepository) FindAll() ([]model.User, error)          { return m.users, nil }
-func (m *mockUserRepository) FindByID(id uint) (*model.User, error)   { return &m.users[0], nil }
-func (m *mockUserRepository) Create(u *model.User) error              { m.users = append(m.users, *u); return nil }
-func (m *mockUserRepository) Update(u *model.User) error              { return nil }
-func (m *mockUserRepository) Delete(id uint) error                    { return nil }
+func (m *mockUserRepository) FindAll() ([]model.User, error)        { return m.users, nil }
+func (m *mockUserRepository) FindByID(id uint) (*model.User, error) { return &m.users[0], nil }
+func (m *mockUserRepository) Create(u *model.User) error            { m.users = append(m.users, *u); return nil }
+func (m *mockUserRepository) Update(u *model.User) error            { return nil }
+func (m *mockUserRepository) Delete(id uint) error                  { return nil }
 func (m *mockUserRepository) FindByEmail(email string) (*model.User, error) {
 	if m.findFn != nil {
 		return m.findFn(email)
