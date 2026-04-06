@@ -38,5 +38,5 @@
 
 ## Pattern
 
-Router → Domain → {DomainName} → handler → service → UseCase → Interface / Repository
+Router → Domain → {DomainName} → handler → service → Interface / Repository
 
