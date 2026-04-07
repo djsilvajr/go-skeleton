@@ -20,3 +20,8 @@ Example:
 	}
 }
 
+## Delete
+
+- Aways write Deletes as SoftDeletes unless I specify in task.
+
+
