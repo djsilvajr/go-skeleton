@@ -21,7 +21,7 @@ type User struct {
 	Email     string         `gorm:"uniqueIndex;size:150;not null"            json:"email"`
 	Password  string         `gorm:"not null"                                 json:"-"`
 	Role      Role           `gorm:"type:enum('admin','user');default:'user'" json:"role"`
-	CreatedAt time.Time      `                                    			  json:"created_at"`
-	UpdatedAt time.Time      `                                    			  json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index"                        			  json:"deleted_at,omitempty"`
+	CreatedAt time.Time      `                                    			  json:"createdAt"`
+	UpdatedAt time.Time      `                                    			  json:"updatedAt"`
+	DeletedAt gorm.DeletedAt `gorm:"index"                        			  json:"deletedAt,omitempty"`
 }

@@ -1,0 +1,242 @@
+[
+  {
+    "domain": "Users",
+    "name": "List Users",
+    "method": "GET",
+    "endpoint": "/api/v1/users",
+    "description": "Return all users. Requires authentication.",
+    "request": {
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {token}", "required": true }
+      ],
+      "query": [],
+      "body": null
+    },
+    "example_request": {
+      "json": null,
+      "curl": "curl -X GET {{base_url}}/api/v1/users \\\n  -H 'Authorization: Bearer {token}'"
+    },
+    "response": {
+      "success": {
+        "status": 200,
+        "body": {
+          "data": [
+            {
+              "id": 1,
+              "name": "Alice",
+              "email": "alice@example.com",
+              "role": "admin",
+              "createdAt": "2026-04-07T10:00:00Z",
+              "updatedAt": "2026-04-07T10:00:00Z",
+              "deletedAt": null
+            }
+          ]
+        },
+        "fields": [
+          { "field": "data[].id",        "type": "number",       "description": "Unique user identifier" },
+          { "field": "data[].name",       "type": "string",       "description": "User's full name" },
+          { "field": "data[].email",      "type": "string",       "description": "User's email address" },
+          { "field": "data[].role",       "type": "string",       "description": "User role: admin | user" },
+          { "field": "data[].createdAt",  "type": "string (ISO)", "description": "Account creation timestamp" },
+          { "field": "data[].updatedAt",  "type": "string (ISO)", "description": "Last update timestamp" },
+          { "field": "data[].deletedAt",  "type": "string | null","description": "Soft-delete timestamp, null if active" }
+        ]
+      }
+    },
+    "errors": [
+      { "code": 401, "message": "Unauthorized",           "description": "Missing or invalid JWT token" },
+      { "code": 500, "message": "Could not retrieve users", "description": "Internal error while fetching users" }
+    ]
+  },
+  {
+    "domain": "Users",
+    "name": "Get User",
+    "method": "GET",
+    "endpoint": "/api/v1/users/{id}",
+    "description": "Return a single user by ID. Requires authentication.",
+    "request": {
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {token}", "required": true }
+      ],
+      "query": [],
+      "body": null
+    },
+    "example_request": {
+      "json": null,
+      "curl": "curl -X GET {{base_url}}/api/v1/users/1 \\\n  -H 'Authorization: Bearer {token}'"
+    },
+    "response": {
+      "success": {
+        "status": 200,
+        "body": {
+          "data": {
+            "id": 1,
+            "name": "Alice",
+            "email": "alice@example.com",
+            "role": "admin",
+            "createdAt": "2026-04-07T10:00:00Z",
+            "updatedAt": "2026-04-07T10:00:00Z",
+            "deletedAt": null
+          }
+        },
+        "fields": [
+          { "field": "data.id",        "type": "number",       "description": "Unique user identifier" },
+          { "field": "data.name",       "type": "string",       "description": "User's full name" },
+          { "field": "data.email",      "type": "string",       "description": "User's email address" },
+          { "field": "data.role",       "type": "string",       "description": "User role: admin | user" },
+          { "field": "data.createdAt",  "type": "string (ISO)", "description": "Account creation timestamp" },
+          { "field": "data.updatedAt",  "type": "string (ISO)", "description": "Last update timestamp" },
+          { "field": "data.deletedAt",  "type": "string | null","description": "Soft-delete timestamp, null if active" }
+        ]
+      }
+    },
+    "errors": [
+      { "code": 400, "message": "Invalid id",    "description": "The provided ID is not a valid integer" },
+      { "code": 401, "message": "Unauthorized",  "description": "Missing or invalid JWT token" },
+      { "code": 404, "message": "User not found","description": "No user exists with the given ID" }
+    ]
+  },
+  {
+    "domain": "Users",
+    "name": "Create User",
+    "method": "POST",
+    "endpoint": "/api/v1/users",
+    "description": "Create a new user. Requires authentication.",
+    "request": {
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {token}", "required": true }
+      ],
+      "query": [],
+      "body": {
+        "name": "string (min: 2)",
+        "email": "string",
+        "password": "string (min: 6)"
+      }
+    },
+    "example_request": {
+      "json": {
+        "name": "Bob Silva",
+        "email": "bob@example.com",
+        "password": "bobpass"
+      },
+      "curl": "curl -X POST {{base_url}}/api/v1/users \\\n  -H 'Authorization: Bearer {token}' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"name\":\"Bob Silva\",\"email\":\"bob@example.com\",\"password\":\"bobpass\"}'"
+    },
+    "response": {
+      "success": {
+        "status": 201,
+        "body": {
+          "data": {
+            "id": 2,
+            "name": "Bob Silva",
+            "email": "bob@example.com",
+            "role": "user",
+            "createdAt": "2026-04-07T11:00:00Z",
+            "updatedAt": "2026-04-07T11:00:00Z",
+            "deletedAt": null
+          }
+        },
+        "fields": [
+          { "field": "data.id",        "type": "number",       "description": "Unique user identifier" },
+          { "field": "data.name",       "type": "string",       "description": "User's full name" },
+          { "field": "data.email",      "type": "string",       "description": "User's email address" },
+          { "field": "data.role",       "type": "string",       "description": "User role, defaults to \"user\"" },
+          { "field": "data.createdAt",  "type": "string (ISO)", "description": "Account creation timestamp" }
+        ]
+      }
+    },
+    "errors": [
+      { "code": 401, "message": "Unauthorized",        "description": "Missing or invalid JWT token" },
+      { "code": 422, "message": "Validation error",    "description": "Required fields missing or invalid" },
+      { "code": 500, "message": "Internal server error","description": "Unexpected error while creating the user" }
+    ]
+  },
+  {
+    "domain": "Users",
+    "name": "Update User",
+    "method": "PUT",
+    "endpoint": "/api/v1/users/{id}",
+    "description": "Update name and email of an existing user. Requires authentication.",
+    "request": {
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {token}", "required": true }
+      ],
+      "query": [],
+      "body": {
+        "name": "string (min: 2)",
+        "email": "string"
+      }
+    },
+    "example_request": {
+      "json": {
+        "name": "Bob Updated",
+        "email": "bob.updated@example.com"
+      },
+      "curl": "curl -X PUT {{base_url}}/api/v1/users/2 \\\n  -H 'Authorization: Bearer {token}' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"name\":\"Bob Updated\",\"email\":\"bob.updated@example.com\"}'"
+    },
+    "response": {
+      "success": {
+        "status": 200,
+        "body": {
+          "data": {
+            "id": 2,
+            "name": "Bob Updated",
+            "email": "bob.updated@example.com",
+            "role": "user",
+            "createdAt": "2026-04-07T11:00:00Z",
+            "updatedAt": "2026-04-07T12:00:00Z",
+            "deletedAt": null
+          }
+        },
+        "fields": [
+          { "field": "data.id",        "type": "number",       "description": "Unique user identifier" },
+          { "field": "data.name",       "type": "string",       "description": "Updated name" },
+          { "field": "data.email",      "type": "string",       "description": "Updated email" },
+          { "field": "data.updatedAt",  "type": "string (ISO)", "description": "Timestamp of the update" }
+        ]
+      }
+    },
+    "errors": [
+      { "code": 400, "message": "Invalid id",           "description": "The provided ID is not a valid integer" },
+      { "code": 401, "message": "Unauthorized",         "description": "Missing or invalid JWT token" },
+      { "code": 422, "message": "Validation error",     "description": "Required fields missing or invalid" },
+      { "code": 500, "message": "Internal server error","description": "Unexpected error while updating the user" }
+    ]
+  },
+  {
+    "domain": "Users",
+    "name": "Delete User",
+    "method": "DELETE",
+    "endpoint": "/api/v1/users/{id}",
+    "description": "Soft-delete a user by ID. Requires authentication and admin role.",
+    "request": {
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {token}", "required": true }
+      ],
+      "query": [],
+      "body": null
+    },
+    "example_request": {
+      "json": null,
+      "curl": "curl -X DELETE {{base_url}}/api/v1/users/2 \\\n  -H 'Authorization: Bearer {token}'"
+    },
+    "response": {
+      "success": {
+        "status": 200,
+        "body": {
+          "data": {
+            "deleted": true
+          }
+        },
+        "fields": [
+          { "field": "data.deleted", "type": "boolean", "description": "Always true when the operation succeeds" }
+        ]
+      }
+    },
+    "errors": [
+      { "code": 400, "message": "Invalid id",           "description": "The provided ID is not a valid integer" },
+      { "code": 401, "message": "Unauthorized",         "description": "Missing or invalid JWT token" },
+      { "code": 403, "message": "Forbidden",            "description": "Authenticated user does not have the admin role" },
+      { "code": 500, "message": "Internal server error","description": "Unexpected error while deleting the user" }
+    ]
+  }
+]

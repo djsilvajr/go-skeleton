@@ -53,6 +53,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'api_base_url' => env('BASE_API_URL', 'http://localhost:8020'),
 
     /*
     |--------------------------------------------------------------------------

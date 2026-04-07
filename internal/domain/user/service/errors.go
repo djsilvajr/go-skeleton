@@ -1,10 +1,14 @@
 package service
 
-import "errors"
+import (
+	"errors"
 
-// Sentinel errors — use these for type-safe error checks in tests and handlers.
+	"github.com/djsilvajr/go-skeleton/internal/domain/user/service/usecase"
+)
+
+// Sentinel errors — re-exported for type-safe checks in tests and handlers.
 var (
-	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrInvalidCredentials = usecase.ErrInvalidCredentials
 	ErrUserNotFound       = errors.New("user not found")
 	ErrEmailAlreadyInUse  = errors.New("email already in use")
 )

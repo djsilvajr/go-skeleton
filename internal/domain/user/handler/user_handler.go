@@ -4,8 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/djsilvajr/go-skeleton/internal/domain/user/service"
 	"github.com/gin-gonic/gin"
+
+	"github.com/djsilvajr/go-skeleton/internal/domain/user/service"
+	"github.com/djsilvajr/go-skeleton/internal/response"
 )
 
 type UserHandler struct {
@@ -19,70 +21,80 @@ func NewUserHandler(svc service.UserService) *UserHandler {
 func (h *UserHandler) List(c *gin.Context) {
 	users, err := h.svc.List()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.Error(c, http.StatusInternalServerError, "Could not retrieve users", nil)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": users})
+	response.Success(c, http.StatusOK, users)
 }
 
 func (h *UserHandler) Show(c *gin.Context) {
 	id, err := parseID(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		response.Error(c, http.StatusBadRequest, "Invalid id", nil)
 		return
 	}
+
 	user, err := h.svc.GetByID(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		response.Error(c, http.StatusNotFound, "User not found", nil)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": user})
+
+	response.Success(c, http.StatusOK, user)
 }
 
 func (h *UserHandler) Store(c *gin.Context) {
 	var req storeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		response.Error(c, http.StatusUnprocessableEntity, "Validation error", gin.H{"validation": err.Error()})
 		return
 	}
+
 	user, err := h.svc.Create(req.Name, req.Email, req.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.Error(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"data": user})
+
+	response.Success(c, http.StatusCreated, user)
 }
 
 func (h *UserHandler) Update(c *gin.Context) {
 	id, err := parseID(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		response.Error(c, http.StatusBadRequest, "Invalid id", nil)
 		return
 	}
+
 	var req updateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		response.Error(c, http.StatusUnprocessableEntity, "Validation error", gin.H{"validation": err.Error()})
 		return
 	}
+
 	user, err := h.svc.Update(id, req.Name, req.Email)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.Error(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": user})
+
+	response.Success(c, http.StatusOK, user)
 }
 
+// Destroy performs a soft-delete and returns {"data": {"deleted": true}}.
 func (h *UserHandler) Destroy(c *gin.Context) {
 	id, err := parseID(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		response.Error(c, http.StatusBadRequest, "Invalid id", nil)
 		return
 	}
+
 	if err := h.svc.Delete(id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.Error(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
-	c.Status(http.StatusNoContent)
+
+	response.Deleted(c)
 }
 
 // --- request structs ---

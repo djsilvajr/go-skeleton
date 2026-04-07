@@ -6,8 +6,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+
 	"github.com/djsilvajr/go-skeleton/internal/config"
 	"github.com/djsilvajr/go-skeleton/internal/domain/user/service"
+	"github.com/djsilvajr/go-skeleton/internal/response"
 )
 
 type AuthHandler struct {
@@ -25,29 +27,29 @@ func NewAuthHandler(svc service.UserService, cfg *config.Config) *AuthHandler {
 // @Accept      json
 // @Produce     json
 // @Param       body body loginRequest true "Credentials"
-// @Success     200  {object}  map[string]string
-// @Failure     401  {object}  map[string]string
+// @Success     200  {object}  map[string]interface{}
+// @Failure     401  {object}  map[string]interface{}
 // @Router      /auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req loginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		response.Error(c, http.StatusUnprocessableEntity, "Validation error", gin.H{"validation": err.Error()})
 		return
 	}
 
 	user, err := h.svc.ValidateCredentials(req.Email, req.Password)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+		response.Error(c, http.StatusUnauthorized, "Invalid credentials", nil)
 		return
 	}
 
 	token, err := generateToken(user.ID, string(user.Role), h.cfg)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not generate token"})
+		response.Error(c, http.StatusInternalServerError, "Could not generate token", nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": token, "type": "Bearer"})
+	response.Success(c, http.StatusOK, gin.H{"token": token, "type": "Bearer"})
 }
 
 // Register godoc
@@ -57,23 +59,23 @@ func (h *AuthHandler) Login(c *gin.Context) {
 // @Produce     json
 // @Param       body body registerRequest true "User data"
 // @Success     201  {object}  map[string]interface{}
-// @Failure     422  {object}  map[string]string
+// @Failure     422  {object}  map[string]interface{}
 // @Router      /auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req registerRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		response.Error(c, http.StatusUnprocessableEntity, "Validation error", gin.H{"validation": err.Error()})
 		return
 	}
 
 	user, err := h.svc.Create(req.Name, req.Email, req.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		response.Error(c, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
 	token, _ := generateToken(user.ID, string(user.Role), h.cfg)
-	c.JSON(http.StatusCreated, gin.H{"data": user, "token": token, "type": "Bearer"})
+	response.Success(c, http.StatusCreated, gin.H{"user": user, "token": token, "type": "Bearer"})
 }
 
 // --- helpers ---

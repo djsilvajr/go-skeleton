@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/djsilvajr/go-skeleton/internal/config"
 	"github.com/djsilvajr/go-skeleton/internal/domain/user/handler"
 	"github.com/djsilvajr/go-skeleton/internal/domain/user/model"
@@ -17,8 +18,8 @@ import (
 // stubUserService satisfies service.UserService for handler tests.
 type stubUserService struct {
 	service.UserService
-	createFn            func(name, email, password string) (*model.User, error)
-	validateFn          func(email, password string) (*model.User, error)
+	createFn   func(name, email, password string) (*model.User, error)
+	validateFn func(email, password string) (*model.User, error)
 }
 
 func (s *stubUserService) Create(name, email, password string) (*model.User, error) {
@@ -56,10 +57,16 @@ func TestAuthHandler_Login_Success(t *testing.T) {
 		t.Fatalf("expected 200, got %d — body: %s", w.Code, w.Body.String())
 	}
 
-	var resp map[string]string
+	// Response is now { "data": { "token": "...", "type": "Bearer" } }
+	var resp map[string]interface{}
 	json.Unmarshal(w.Body.Bytes(), &resp)
-	if resp["token"] == "" {
-		t.Error("expected JWT token in response")
+
+	data, ok := resp["data"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected 'data' object in response, got: %s", w.Body.String())
+	}
+	if data["token"] == "" {
+		t.Error("expected JWT token in response data")
 	}
 }
 
@@ -80,5 +87,13 @@ func TestAuthHandler_Login_InvalidCredentials(t *testing.T) {
 
 	if w.Code != http.StatusUnauthorized {
 		t.Fatalf("expected 401, got %d", w.Code)
+	}
+
+	// Response is now { "error": { "code": 401, "message": "...", "details": {} } }
+	var resp map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &resp)
+
+	if _, hasError := resp["error"]; !hasError {
+		t.Error("expected 'error' key in response")
 	}
 }
