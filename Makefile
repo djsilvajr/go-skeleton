@@ -16,10 +16,6 @@ build:
 run:
 	go run ./cmd/api
 
-## Run the queue worker locally
-worker:
-	go run ./cmd/worker
-
 ## Run the scheduler locally
 scheduler:
 	go run ./cmd/scheduler
@@ -27,10 +23,6 @@ scheduler:
 ## Run database migrations
 migrate:
 	go run ./cmd/migrate
-
-## Generate Swagger docs  (requires: go install github.com/swaggo/swag/cmd/swag@latest)
-swagger:
-	swag init -g cmd/api/main.go -o docs
 
 ## Run all tests
 test:

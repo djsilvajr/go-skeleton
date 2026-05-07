@@ -19,7 +19,6 @@ Define a scalable, maintainable, and domain-driven architecture for the project.
 
 ├── cmd/
 │   ├── api/         # API entrypoint
-│   ├── worker/      # Queue worker
 │   ├── scheduler/   # Cron jobs
 │   └── migrate/     # Migrations runner
 
@@ -31,8 +30,6 @@ Define a scalable, maintainable, and domain-driven architecture for the project.
 │   ├── config/        # Environment config
 │   ├── router/        # Route definitions
 │   ├── middleware/    # Auth, CORS, RateLimit, Logger
-│   ├── events/        # Event bus (pub/sub)
-│   ├── queue/         # Jobs + Redis
 │   ├── scheduler/     # Scheduled tasks
 
 │   ├── infra/
@@ -129,7 +126,6 @@ Router → Middleware → Handler → Service → UseCase → Repository → Dat
 * Communication via:
 
   * Interfaces
-  * Events
 
 ---
 

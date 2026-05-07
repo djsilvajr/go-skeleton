@@ -8,7 +8,7 @@
 ![Tracing](https://img.shields.io/badge/Tracing-Jaeger%20%2F%20OpenTelemetry-00A1C9?logo=opentelemetry&logoColor=white)
 ![Tests](https://img.shields.io/badge/Tests-Go%20Test-376ABD?logo=go&logoColor=white)
 
-> Skeleton de API em Go — repository pattern, JWT, Redis, OpenTelemetry (Jaeger), queue worker, scheduler, eventos e rate limit. Arquitetura espelhada no [Laravel-skeleton](https://github.com/djsilvajr/Laravel-skeleton), sem frontend.
+> Skeleton de API em Go — repository pattern, JWT, Redis, OpenTelemetry (Jaeger), scheduler e rate limit. Arquitetura espelhada no [Laravel-skeleton](https://github.com/djsilvajr/Laravel-skeleton), sem frontend.
 
 ---
 
@@ -20,13 +20,11 @@ Base sólida para APIs RESTful em Go de médio porte, incluindo:
 - ✅ **Repository pattern** com interfaces — troca de backend sem tocar na lógica de negócio
 - ✅ **JWT Auth** — guards separados por rota, role-based (admin/user)
 - ✅ **Rate limit** — por IP, configurável por rota
-- ✅ **Redis** — cache + fila de jobs
-- ✅ **Queue worker** — processo separado, handlers registráveis
+- ✅ **Redis** — cache
 - ✅ **Scheduler** — tarefas recorrentes em processo dedicado
-- ✅ **Events** — pub/sub interno síncrono e assíncrono (fire-and-forget)
 - ✅ **Observabilidade** — OpenTelemetry → Jaeger (liga com uma env)
 - ✅ **Testes unitários e de integração** — mocks hand-rolled, sem dependências externas
-- ✅ **Ambiente dockerizado** — app + worker + scheduler + MySQL + Redis + Jaeger prontos
+- ✅ **Ambiente dockerizado** — app + scheduler + MySQL + Redis + Jaeger prontos
 
 ---
 
@@ -42,7 +40,6 @@ Base sólida para APIs RESTful em Go de médio porte, incluindo:
 │   └── otel-collector.yml      # Config do OpenTelemetry collector
 ├── cmd/
 │   ├── api/        main.go     # Entrypoint da API
-│   ├── worker/     main.go     # Entrypoint do queue worker
 │   ├── scheduler/  main.go     # Entrypoint do scheduler
 │   └── migrate/    main.go     # Entrypoint das migrations
 ├── migrations/
@@ -52,8 +49,6 @@ Base sólida para APIs RESTful em Go de médio porte, incluindo:
     ├── config/                 # Carrega variáveis de ambiente
     ├── router/                 # Rotas — equivalente ao routes/api.php
     ├── middleware/             # Auth JWT, AdminOnly, RateLimit, CORS, Logger
-    ├── events/                 # Bus pub/sub interno
-    ├── queue/                  # Worker + Dispatch via Redis
     ├── scheduler/              # Tarefas recorrentes
     ├── infra/
     │   ├── database/           # Conexão GORM + MySQL
@@ -150,12 +145,8 @@ make up
 # Rodar a API localmente (sem Docker)
 make run
 
-# Rodar worker localmente
-make worker
-
 # Rodar scheduler localmente
 make scheduler
-
 
 # Rodar todos os testes
 make test
@@ -204,42 +195,6 @@ Registre a migration em `migrations/migrate.go`:
 
 ```go
 db.AutoMigrate(&model.Produto{})
-```
-
----
-
-## 📬 Disparando um job para a fila
-
-```go
-queue.Dispatch(ctx, rdb, "send_welcome_email", map[string]string{
-    "email": user.Email,
-    "name":  user.Name,
-})
-```
-
-Registre o handler no `cmd/worker/main.go`:
-
-```go
-worker.Register("send_welcome_email", func(ctx context.Context, payload json.RawMessage) error {
-    // processar aqui
-    return nil
-})
-```
-
----
-
-## 📡 Disparando um evento
-
-```go
-events.DispatchAsync(events.UserCreated, map[string]any{"user_id": user.ID})
-```
-
-Registre um listener em qualquer `init()` ou no bootstrap:
-
-```go
-events.Listen(events.UserCreated, func(e events.Event) {
-    log.Printf("usuário criado: %v", e.Payload)
-})
 ```
 
 ---
