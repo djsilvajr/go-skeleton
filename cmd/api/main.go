@@ -59,8 +59,8 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("🚀 Server running on http://localhost:%s", cfg.AppPort)
-		log.Printf("📄 Swagger: http://localhost:%s/api/documentation/index.html", cfg.AppPort)
+		log.Printf("Server running on http://localhost:%s", cfg.AppPort)
+		log.Printf("Swagger: http://localhost:%s/api/documentation/index.html", cfg.AppPort)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("server error: %v", err)
 		}

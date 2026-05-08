@@ -29,7 +29,7 @@ func (s *Scheduler) Add(name string, interval time.Duration, fn func(ctx context
 
 // Start launches all tasks in goroutines and blocks until ctx is cancelled.
 func (s *Scheduler) Start(ctx context.Context) {
-	log.Println("⏰ Scheduler started")
+	log.Println("Scheduler started")
 	for _, task := range s.tasks {
 		t := task
 		go func() {
