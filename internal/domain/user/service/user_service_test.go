@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	userError "github.com/djsilvajr/go-skeleton/internal/domain/user/errors"
 	"github.com/djsilvajr/go-skeleton/internal/domain/user/model"
 	"github.com/djsilvajr/go-skeleton/internal/domain/user/service"
 )
@@ -24,7 +25,10 @@ func (m *mockUserRepository) FindByEmail(email string) (*model.User, error) {
 	if m.findFn != nil {
 		return m.findFn(email)
 	}
-	return nil, errors.New("not found")
+	return nil, userError.ErrUserNotFound
+}
+func (m *mockUserRepository) FindByEmailOrName(email, name string) (*model.User, error) {
+	return nil, userError.ErrUserNotFound
 }
 
 func TestUserService_Create(t *testing.T) {

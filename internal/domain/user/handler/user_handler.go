@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 
+	userError "github.com/djsilvajr/go-skeleton/internal/domain/user/errors"
 	"github.com/djsilvajr/go-skeleton/internal/domain/user/service"
 	"github.com/djsilvajr/go-skeleton/internal/response"
 )
@@ -50,13 +52,23 @@ func (h *UserHandler) Store(c *gin.Context) {
 		return
 	}
 
-	user, err := h.svc.Create(req.Name, req.Email, req.Password)
+	userCreated, err := h.svc.Create(req.Name, req.Email, req.Password)
 	if err != nil {
-		response.Error(c, http.StatusInternalServerError, err.Error(), nil)
-		return
+		switch {
+		case errors.Is(err, userError.ErrEmailAlreadyInUse):
+			response.Error(c, http.StatusConflict, err.Error(), nil)
+			return
+		case errors.Is(err, userError.ErrNameAlreadyInUse):
+			response.Error(c, http.StatusConflict, err.Error(), nil)
+			return
+		default:
+			response.Error(c, http.StatusInternalServerError, err.Error(), nil)
+			return
+
+		}
 	}
 
-	response.Success(c, http.StatusCreated, user)
+	response.Success(c, http.StatusCreated, userCreated)
 }
 
 func (h *UserHandler) Update(c *gin.Context) {

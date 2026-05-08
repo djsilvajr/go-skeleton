@@ -11,6 +11,7 @@ type UserRepository interface {
 	FindAll() ([]model.User, error)
 	FindByID(id uint) (*model.User, error)
 	FindByEmail(email string) (*model.User, error)
+	FindByEmailOrName(email string, name string) (*model.User, error)
 	Create(user *model.User) error
 	Update(user *model.User) error
 	Delete(id uint) error
@@ -39,6 +40,12 @@ func (r *userRepository) FindByID(id uint) (*model.User, error) {
 func (r *userRepository) FindByEmail(email string) (*model.User, error) {
 	var user model.User
 	err := r.db.Where("email = ?", email).First(&user).Error
+	return &user, err
+}
+
+func (r *userRepository) FindByEmailOrName(email string, name string) (*model.User, error) {
+	var user model.User
+	err := r.db.Where("email = ?", email).Or("name = ?", name).First(&user).Error
 	return &user, err
 }
 

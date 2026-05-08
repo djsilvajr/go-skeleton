@@ -3,6 +3,7 @@ package usecase
 import (
 	"golang.org/x/crypto/bcrypt"
 
+	userError "github.com/djsilvajr/go-skeleton/internal/domain/user/errors"
 	"github.com/djsilvajr/go-skeleton/internal/domain/user/model"
 	"github.com/djsilvajr/go-skeleton/internal/domain/user/repository"
 )
@@ -26,6 +27,21 @@ func NewCreateUserUseCase(repo repository.UserRepository) *CreateUserUseCase {
 
 // Execute hashes the password, applies a default role and persists the user.
 func (uc *CreateUserUseCase) Execute(input CreateUserInput) (*model.User, error) {
+
+	duplicatedUser, err := uc.repo.FindByEmailOrName(input.Email, input.Name)
+
+	if err == nil {
+
+		if duplicatedUser.Name == input.Name {
+			return nil, userError.ErrNameAlreadyInUse
+		}
+
+		if duplicatedUser.Email == input.Email {
+			return nil, userError.ErrEmailAlreadyInUse
+		}
+
+	}
+
 	hashed, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err

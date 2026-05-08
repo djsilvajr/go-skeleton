@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/djsilvajr/go-skeleton/internal/config"
+	userError "github.com/djsilvajr/go-skeleton/internal/domain/user/errors"
 	"github.com/djsilvajr/go-skeleton/internal/domain/user/handler"
 	"github.com/djsilvajr/go-skeleton/internal/domain/user/model"
 	"github.com/djsilvajr/go-skeleton/internal/domain/user/service"
@@ -74,7 +75,7 @@ func TestAuthHandler_Login_InvalidCredentials(t *testing.T) {
 	cfg := &config.Config{JWTSecret: "test-secret", JWTExpireHour: 1}
 	svc := &stubUserService{
 		validateFn: func(email, password string) (*model.User, error) {
-			return nil, service.ErrInvalidCredentials
+			return nil, userError.ErrInvalidCredentials
 		},
 	}
 
