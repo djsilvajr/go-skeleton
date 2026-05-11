@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	userError "github.com/djsilvajr/go-skeleton/internal/domain/user/errors"
 	"github.com/djsilvajr/go-skeleton/internal/domain/user/model"
 	"github.com/djsilvajr/go-skeleton/internal/domain/user/repository"
 )
@@ -25,6 +26,20 @@ func (uc *UpdateUserUseCase) Execute(input UpdateUserInput) (*model.User, error)
 	user, err := uc.repo.FindByID(input.ID)
 	if err != nil {
 		return nil, err
+	}
+
+	duplicatedUser, err := uc.repo.FindByEmailOrName(input.Email, input.Name)
+
+	if err == nil && duplicatedUser.ID == input.ID {
+
+		if duplicatedUser.Name == input.Name {
+			return nil, userError.ErrNameAlreadyInUse
+		}
+
+		if duplicatedUser.Email == input.Email {
+			return nil, userError.ErrEmailAlreadyInUse
+		}
+
 	}
 
 	user.Name = input.Name
